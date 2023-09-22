@@ -1,0 +1,56 @@
+nri_plan_interface_node:
+    ros__parameters:
+        #debug: false
+        density_ui_topic: coverage_control/color/density
+        map_resol_topic: coverage_control/map_resolution
+        pivot_gps_lu_topic: coverage_control/pivot_gps_lu
+        pivot_gps_lb_topic: coverage_control/pivot_gps_lb
+        pivot_gps_ru_topic: coverage_control/pivot_gps_ru
+        pivot_gps_rb_topic: coverage_control/pivot_gps_rb
+        mission_cancel_topic: coverage_control/cancel
+        mission_return_home_topic: coverage_control/return_home
+        datum_x_norm_topic: coverage_control/datum_x_norm
+        datum_y_norm_topic: coverage_control/datum_y_norm
+        trunk_dir: /home/artlab/nri_plan_ws/src/trunk
+        density_save_dir: /home/artlab/nri_plan_ws/src/trunk/density.png
+        map_resol_txt_dir: /home/artlab/nri_plan_ws/src/trunk/resol.txt
+        datum_txt_dir: /home/artlab/nri_plan_ws/src/trunk/datum.txt
+        pivot_gps_lu_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_lu.txt
+        pivot_gps_lb_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_lb.txt
+        pivot_gps_ru_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_ru.txt
+        pivot_gps_rb_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_rb.txt
+        
+
+nri_plan_partition_node:
+    ros__parameters:
+        robot_gps_topic: global_position
+        trunk_dir: /home/artlab/nri_plan_ws/src/trunk
+        density_save_dir: /home/artlab/nri_plan_ws/src/trunk/density.png
+        map_resol_txt_dir: /home/artlab/nri_plan_ws/src/trunk/resol.txt
+        datum_txt_dir: /home/artlab/nri_plan_ws/src/trunk/datum.txt
+        pivot_gps_lu_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_lu.txt
+        pivot_gps_lb_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_lb.txt
+        pivot_gps_ru_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_ru.txt
+        pivot_gps_rb_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_rb.txt
+        max_pixel_length: 300
+        max_agent_num: 10
+        weight_width: 1
+        weight_height: 0
+        lamda: 1
+        is_hete_cov_radius: false
+        is_dropout_use: true
+        is_img_save: true
+        is_propa_connected_area: false
+        travel_time_duration: 20.0
+
+nri_plan_waypoint_node:
+    ros__parameters:
+        robot_gps_topic: global_position
+        robot_gps_goal_topic: goal
+        trunk_dir: /home/artlab/nri_plan_ws/src/trunk
+        datum_txt_dir: /home/artlab/nri_plan_ws/src/trunk/datum.txt
+        pivot_gps_lu_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_lu.txt
+        pivot_gps_lb_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_lb.txt
+        pivot_gps_ru_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_ru.txt
+        pivot_gps_rb_txt_dir: /home/artlab/nri_plan_ws/src/trunk/gps_rb.txt
+        max_agent_num: 10

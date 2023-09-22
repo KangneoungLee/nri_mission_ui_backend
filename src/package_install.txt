@@ -1,0 +1,2 @@
+pip install haversine
+pip install opencv-python
