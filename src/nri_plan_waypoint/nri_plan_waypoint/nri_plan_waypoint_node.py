@@ -146,7 +146,7 @@ class NriPlanWayPoint(Node):
         self.read_gps_pivot()
         self.crop_row_width_conv()
         self.waypoint_gen()
-        
+        self.waypoint_gen_debug()
         self.completed = True
         
   def gps_callback(self, msg, robot_index):
@@ -245,17 +245,23 @@ class NriPlanWayPoint(Node):
         cv2.rectangle(bin_img, (data[0], data[1]), (data[2], data[3]), cv2.FILLED)
       #cv2.imshow(f"{robot_index} robot bin_img after drawing contour rect", bin_img)
       #cv2.waitKey(0)      
-      self.agent_infos[robot_index].part_img = bin_img.copy()
+      self.agent_infos[robot_index].part_img = bin_img.copy() 
       
+      x_init_correction = 0
       if (wp['x'] >= self.datum_x_norm*self.map_width) and (wp['y'] < self.datum_y_norm*self.map_height):
         self.agent_infos[robot_index].dir_idx = 0
+        x_init_correction = self.crop_row_pixel
       elif (wp['x'] < self.datum_x_norm*self.map_width) and (wp['y'] < self.datum_y_norm*self.map_height):
         self.agent_infos[robot_index].dir_idx = 1
+        x_init_correction = -self.crop_row_pixel
       elif (wp['x'] >= self.datum_x_norm*self.map_width) and (wp['y'] >= self.datum_y_norm*self.map_height):
         self.agent_infos[robot_index].dir_idx = 2
+        x_init_correction = self.crop_row_pixel
       elif (wp['x'] < self.datum_x_norm*self.map_width) and (wp['y'] >= self.datum_y_norm*self.map_height):
         self.agent_infos[robot_index].dir_idx = 3
-        
+        x_init_correction = -self.crop_row_pixel
+      
+      wp['x'] = wp['x'] + x_init_correction  
       self.agent_infos[robot_index].dir_cnt = self.agent_infos[robot_index].dir_cnt + 1
       self.agent_infos[robot_index].waypoint.append(wp)
       self.agent_infos[robot_index].wp_num = 0
@@ -337,7 +343,7 @@ class NriPlanWayPoint(Node):
     if self.agent_infos[robot_index].part_img[int(cur_y), int(round_next_x_temp)] == 0:
       return cur_x, True
     
-    next_x_temp = next_x_temp + self.crop_row_pixel*cur_dir_x/2
+    #next_x_temp = next_x_temp + self.crop_row_pixel*cur_dir_x/2
     
     while(True):
       next_x_temp = next_x_temp + cur_dir_x
@@ -387,10 +393,48 @@ class NriPlanWayPoint(Node):
         if self.agent_infos[i].dir_cnt >= 4:
           self.agent_infos[i].dir_cnt = 0
            
-    self.agent_infos[i].cur_wp = 0         
+    self.agent_infos[i].cur_wp = 0
+    self.agent_infos[i].dir_cnt = 0         
 
-      
-    
+  def waypoint_gen_debug(self):
+    for i in range(0, self.max_agent_num):
+      if self.agent_infos[i].enable is False:
+        continue
+      debug_txt_dir = self.trunk_dir + '/agent_wp_debug_' + str(i) +'.txt'
+      debug_img_dir = self.trunk_dir + '/agent_wp_debug_' + str(i) +'.png'
+      f = open(debug_txt_dir, "w")
+      f.writelines(f"waypoint number : {self.agent_infos[i].wp_num} ")
+      f.writelines(f"current waypoint idx : {self.agent_infos[i].cur_wp} ")
+      f.writelines(f"current dir idx : {self.agent_infos[i].dir_idx} ")
+      for j, wp in enumerate(self.agent_infos[i].waypoint):
+        f.writelines(f"{j}th waypoint x : {wp['x']},   waypoint y : {wp['y']}")
+        img = self.agent_infos[robot_index].part_img.copy()
+        img_rgb = np.zeros((img.shape[0], img.shape[1], 3))
+        img_rgb[:,:,0] = img
+        img_rgb[:,:,1] = img
+        img_rgb[:,:,2] = img
+        color = (255, 0, 0)
+        img_rgb = cv2.circle(img_rgb, (int(wp['x']), int(wp['y'])), 1, color, 1)
+        org_x = int(wp['x'])
+        org_y = int(wp['y'])
+        if org_x >= self.map_width:
+          org_x = org_x - 2
+        else:
+          org_x = org_x + 2
+
+        if org_y >= self.map_height:
+          org_y = org_y - 2
+        else:
+          org_y = org_y + 2
+
+        fontScale = 1
+        thickness = 1
+        img_rgb = cv2.putText(img_rgb, str(j), (org_x, org_y), cv2.FONT_HERSHEY_SIMPLEX, 
+                   fontScale, (0, 255, 0), thickness, cv2.LINE_AA)
+
+      cv2.imwrite(debug_img_dir, img_rgb)
+      f.close()     
+   
 def main(args=None):
   
   # Initialize the rclpy library
