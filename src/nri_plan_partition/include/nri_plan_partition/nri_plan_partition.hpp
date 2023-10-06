@@ -96,6 +96,7 @@ class NriPlanPartition : public rclcpp::Node
        
        void InitialVariable();
        void WritePartition();
+       void GenTempPartition();
        void ReadDensity();
        void ReadDatum();
        void ReadMapResol();

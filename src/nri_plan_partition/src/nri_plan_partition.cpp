@@ -186,18 +186,18 @@ void NriPlanPartition::GpsToMap(float lat_in, float long_in, int & x_out, int & 
     {
       y_axis_del_long_scale = -1;
     }
-    
+       
     double b = (del_lat_in_scale/x_axis_del_lat_scale - del_long_in_scale/x_axis_del_long_scale)/(y_axis_del_lat_scale/x_axis_del_lat_scale - y_axis_del_long_scale/x_axis_del_long_scale);
     double a = (del_lat_in_scale/y_axis_del_lat_scale - del_long_in_scale/y_axis_del_long_scale)/(x_axis_del_lat_scale/y_axis_del_lat_scale - x_axis_del_long_scale/y_axis_del_long_scale);
     
-    x_out = (int)(a*map_width_);
-    y_out = map_height_ - (int)(b*map_height_);
+    x_out = (int)(a*(double)map_width_);
+    y_out = map_height_ - (int)(b*(double)map_height_);
     
-    if(x_out < 0) x_out = 0;
-    else if(x_out >= map_width_)  x_out = map_width_ - 1;
+    if(x_out <= 1) x_out = 2;
+    else if(x_out >= map_width_ - 1)  x_out = map_width_ - 2;
     
-    if(y_out < 0) y_out = 0;
-    else if(y_out >= map_height_)  y_out = map_height_ - 1;
+    if(y_out <= 1) y_out = 2;
+    else if(y_out >= map_height_ - 1)  y_out = map_height_ - 2;
 
 }
 
@@ -257,7 +257,7 @@ void NriPlanPartition::ReadGpsPivot()
     x_axis_del_long_ = rb_long - lb_long;
    
     gps_pivot_ok_ = true;
-
+    std::cout << "____Read GPS Pivot Information competed____ " << std::endl;
 }
 
 void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
@@ -272,6 +272,9 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
         // insert read gps pivot
         this->ReadGpsPivot();
         DynVoroHandle_->InitializeAgent();
+        this->ReadDensity();
+        DynVoroHandle_->ResizeMap(map_height_, map_width_, densityPtr_);
+        
         for (int i = 0; i < max_agent_num_; i++)
         {
           if (gps_info_array_[i].init_ok == false) continue;
@@ -284,21 +287,25 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
         
         cur_agent_num_ = DynVoroHandle_->CurAgentNum();
         
+        this->GenTempPartition();
+        
         running_ = true;
 
-        this->ReadDensity();
         this->ReadDatum();
-        DynVoroHandle_->ResizeMap(map_height_, map_width_, densityPtr_);
+        
         DynVoroHandle_->PushDatum(datum_x_norm_*((float)map_width_), datum_y_norm_*((float)map_height_));
+        
+        std::cout << "____Datum set competed____ " << " datum_x_ : "<< datum_x_norm_*((float)map_width_) << " datum_y_ : "<< datum_y_norm_*((float)map_height_) <<std::endl;
+        
         float DropOutWeight = 1024.0;
         if (cur_agent_num_ <= 1) RealTime_InhbtDropout_ = true;
         else DropOutWeight = ((float)cur_agent_num_)/((float)cur_agent_num_-1);
         
-        //std::string img_dir =  "/home/artlab/nri_plan_ws/src/nri_plan_partition/init_pos_test/";
-	//std::string label_dir = "/home/artlab/nri_plan_ws/src/nri_plan_partition/label/label.txt";
-	//std::string img_save_dir = img_dir + "map_" + "_0"+"_init" +".png";
-	//DynVoroHandle_->Colorized(img_save_dir,label_dir);
-        
+        std::string img_dir =  "/home/artlab/nri_plan_ws/src/nri_plan_partition/init_pos_test/";
+	std::string label_dir = "/home/artlab/nri_plan_ws/src/nri_plan_partition/label/label.txt";
+	std::string img_save_dir = img_dir + "map_" + "_0"+"_init" +".png";
+	DynVoroHandle_->Colorized(img_save_dir,label_dir);
+
         DynVoroHandle_->InitializeCell();
         DynVoroHandle_->DropOutWupdate(DropOutWeight);
         DynVoroHandle_->ExpandedVoronoi();
@@ -341,6 +348,8 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
                 RealTime_InhbtDropout_ = true;
            }
         }
+        
+        std::cout << "____Internal Partitioning competed____ " << std::endl;
   
         this->WritePartition();
         
@@ -356,11 +365,14 @@ void NriPlanPartition::WritePartition()
     {
         for (int y = 0; y<map_height_;y++)
 	{
+	    //std::cout << "x : "  << x << " y: " << y << std::endl;
 	    VoroCell* vorocell_temp = DynVoroHandle_->GetSingleCellByIndex(x, y);
 	    int cell_index = DynVoroHandle_->GetIndex(x, y);
+	    //std::cout << "x : "  << x << " y: " << y << " cell_index : " << cell_index<< std::endl;
 	    int agent_index = vorocell_temp->agentclass_;
+	    //std::cout << "x : "  << x << " y: " << y << " agent_index : " << agent_index<< std::endl;
 	    float density = DynVoroHandle_->GetDensity(x,y);
-			  
+            //std::cout << "x : "  << x << " y: " << y << " density : " << density<< std::endl;	  
 	    if((agent_index >= cur_agent_num_)||(density <= 0.0)) continue;
 			  
 	    unsigned char* temp_map =  agent_partition_maps_[agent_index];
@@ -369,6 +381,8 @@ void NriPlanPartition::WritePartition()
 	    
 	}
     }
+    
+    std::cout << "____Internal Partition copy competed____ " << std::endl;
 	    
     for(int i = 0; i < cur_agent_num_; i++)
     {
@@ -391,9 +405,14 @@ void NriPlanPartition::WritePartition()
 	
 	int start_x_pixel, start_y_pixel;
 	DynVoroHandle_->GetStartingPt(i, start_x_pixel, start_y_pixel);
+	
+	//std::cout << " start_x_pixel :  " << start_x_pixel << " start_y_pixel : " << start_y_pixel << std::endl;
+	
 	StartingInfoTxt << start_x_pixel <<" " << start_y_pixel << std::endl;
 	StartingInfoTxt.close();
     }
+    
+    std::cout << "____Save partiton result completed____ " << std::endl;
 	
 }
 
@@ -439,6 +458,13 @@ void NriPlanPartition::ReadDensity()
 	    densityPtr_[index] =  (unsigned char)img.at<float>(row, col);
 	}
     }
+
+
+    std::cout << "____Read Density Map competed____ " << std::endl;
+}
+
+void NriPlanPartition::GenTempPartition()
+{
     
     for (int i =0; i < agent_partition_maps_.size(); i ++)
     {
@@ -453,10 +479,10 @@ void NriPlanPartition::ReadDensity()
         memset(part_map, 255, map_height_*map_width_*sizeof(unsigned char));
         agent_partition_maps_.push_back(part_map);
     }
-
+    
+    std::cout << "____Generate Temp partition competed____ " << std::endl;
 
 }
-
 
 void NriPlanPartition::ReadDatum()
 {
@@ -475,6 +501,7 @@ void NriPlanPartition::ReadDatum()
     ss >> word;
     
     datum_y_norm_ = std::stof(word);
+    //datum_y_norm_ = 1 - datum_y_norm_; //this is because the axis is different with UI
 
 
 }

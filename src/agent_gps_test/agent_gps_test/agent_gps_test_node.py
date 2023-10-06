@@ -32,6 +32,31 @@ class AgentGPSTest(Node):
     [30.622417, -96.333424],
     [30.622713, -96.333742]]
     
+    self.agent_gps_sim_env = [[30.6218691, -96.3345895],
+    [30.6227609, -96.3345895],
+    [30.6227609, -96.3335605],
+    [30.6218691, -96.3335605],
+    [30.622315, -96.334075]]
+    
+    
+    self.agent_gps1 = [[30.622496738224545, -96.3341396033455],
+    [30.622833438224543, -96.3345281033455],
+    [30.62283987644909, -96.33452080669103],
+    [30.62250317644909, -96.33413230669103],
+    [30.622509614673636, -96.33412501003654]]
+    
+    self.agent_gps2 = [[30.622846314673634, -96.33451351003654],
+    [30.62285275289818, -96.33450621338206],
+    [30.62251605289818, -96.33411771338206],
+    [30.622522491122723, -96.33411041672757],
+    [30.62285919112272, -96.33449891672757]]
+    
+    self.agent_gps3 = [[30.622865629347267, -96.3344916200731],
+    [30.62252892934727, -96.3341031200731],
+    [30.622535367571814, -96.33409582341861],
+    [30.622872067571812, -96.33448432341861],
+    [30.622878505796358, -96.33447702676412]]
+    
     self.publist = []
     self.iopub_0 = self.create_publisher(NavSatFix, 'Robot0/global_position', 1)
     self.publist.append(self.iopub_0)
@@ -55,11 +80,10 @@ class AgentGPSTest(Node):
     self.publist.append(self.iopub_9)
             
     timer_period = 0.2 # seconds
-    self.timer = self.create_timer(timer_period, self.timer_callback)
+    self.timer = self.create_timer(timer_period, self.timer_callback_sim_env)
     
 
   def timer_callback(self):
-
     
     msg = NavSatFix()
     msg.latitude = self.agent_gps[0][0]
@@ -80,6 +104,98 @@ class AgentGPSTest(Node):
     
     msg.latitude = self.agent_gps[4][0]
     msg.longitude = self.agent_gps[4][1]
+    self.iopub_4.publish(msg)
+
+  def timer_callback1(self):
+
+    msg = NavSatFix()
+    msg.latitude = self.agent_gps1[0][0]
+    msg.longitude = self.agent_gps1[0][1]
+    self.iopub_0.publish(msg)
+    
+    msg.latitude = self.agent_gps1[1][0]
+    msg.longitude = self.agent_gps1[1][1]
+    self.iopub_1.publish(msg)
+    
+    msg.latitude = self.agent_gps1[2][0]
+    msg.longitude = self.agent_gps1[2][1]
+    self.iopub_2.publish(msg)
+    
+    msg.latitude = self.agent_gps1[3][0]
+    msg.longitude = self.agent_gps1[3][1]
+    self.iopub_3.publish(msg)
+    
+    msg.latitude = self.agent_gps1[4][0]
+    msg.longitude = self.agent_gps1[4][1]
+    self.iopub_4.publish(msg)
+
+  def timer_callback2(self):
+
+    msg = NavSatFix()
+    msg.latitude = self.agent_gps2[0][0]
+    msg.longitude = self.agent_gps2[0][1]
+    self.iopub_0.publish(msg)
+    
+    msg.latitude = self.agent_gps2[1][0]
+    msg.longitude = self.agent_gps2[1][1]
+    self.iopub_1.publish(msg)
+    
+    msg.latitude = self.agent_gps2[2][0]
+    msg.longitude = self.agent_gps2[2][1]
+    self.iopub_2.publish(msg)
+    
+    msg.latitude = self.agent_gps2[3][0]
+    msg.longitude = self.agent_gps2[3][1]
+    self.iopub_3.publish(msg)
+    
+    msg.latitude = self.agent_gps2[4][0]
+    msg.longitude = self.agent_gps2[4][1]
+    self.iopub_4.publish(msg)
+
+  def timer_callback3(self):
+
+    msg = NavSatFix()
+    msg.latitude = self.agent_gps3[0][0]
+    msg.longitude = self.agent_gps3[0][1]
+    self.iopub_0.publish(msg)
+    
+    msg.latitude = self.agent_gps3[1][0]
+    msg.longitude = self.agent_gps3[1][1]
+    self.iopub_1.publish(msg)
+    
+    msg.latitude = self.agent_gps3[2][0]
+    msg.longitude = self.agent_gps3[2][1]
+    self.iopub_2.publish(msg)
+    
+    msg.latitude = self.agent_gps3[3][0]
+    msg.longitude = self.agent_gps3[3][1]
+    self.iopub_3.publish(msg)
+    
+    msg.latitude = self.agent_gps3[4][0]
+    msg.longitude = self.agent_gps3[4][1]
+    self.iopub_4.publish(msg)
+
+  def timer_callback_sim_env(self):
+
+    msg = NavSatFix()
+    msg.latitude = self.agent_gps_sim_env[0][0]
+    msg.longitude = self.agent_gps_sim_env[0][1]
+    self.iopub_0.publish(msg)
+    
+    msg.latitude = self.agent_gps_sim_env[1][0]
+    msg.longitude = self.agent_gps_sim_env[1][1]
+    self.iopub_1.publish(msg)
+    
+    msg.latitude = self.agent_gps_sim_env[2][0]
+    msg.longitude = self.agent_gps_sim_env[2][1]
+    self.iopub_2.publish(msg)
+    
+    msg.latitude = self.agent_gps_sim_env[3][0]
+    msg.longitude = self.agent_gps_sim_env[3][1]
+    self.iopub_3.publish(msg)
+    
+    msg.latitude = self.agent_gps_sim_env[4][0]
+    msg.longitude = self.agent_gps_sim_env[4][1]
     self.iopub_4.publish(msg)
 
 def main(args=None):

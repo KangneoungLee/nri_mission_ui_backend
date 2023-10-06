@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'agent_gps_test'
+package_name = 'nri_plan_agent_websocket'
 
 setup(
     name=package_name,
@@ -19,7 +19,7 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['agent_gps_test = agent_gps_test.agent_gps_test_node:main', 'agent_gps_follow_test = agent_gps_test.agent_gps_follow_test_node:main'
+        'console_scripts': ['nri_plan_agent_websocket = nri_plan_agent_websocket.nri_plan_agent_websocket_node:main'
         ],
     },
 )
