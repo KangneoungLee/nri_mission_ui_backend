@@ -68,66 +68,86 @@ class NriPlanAgWebSocket(Node):
       
       gps_goal_sub_from_machine_topic = 'Robot' + str(i) + '/' + self.robot_gps_goal_topic
       gps3p_goal_sub_from_machine_topic = 'Robot' + str(i) + '/' + self.robot_gps_goal_topic + '_3p'
+      
+      gps_sub_from_agent = roslibpy.Topic(client, self.robot_gps_from_agent_topic, 'sensor_msgs/NavSatFix')
 
       if i == 0:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 0), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 0), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 0))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 1:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 1), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 1), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 1))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 2:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 2), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 2), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 2))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 3:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 3), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 3), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 3))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 4:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 4), 3)      
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 4), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 4))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 5:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 5), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 5), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 5))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 6:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 6), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 6), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 6))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 7:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 7), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 7), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 7))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 8:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 8), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 8), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 8))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       elif i == 9:
         gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 9), 3)
         self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
         gps3p_goal_sub_from_machine = self.create_subscription(Gps3WayPoints, gps3p_goal_sub_from_machine_topic, lambda msg: self.gps3p_goal_sub_fm_callback(msg, 9), 3)
         self.gps3p_goal_sub_from_machine_list.append(gps3p_goal_sub_from_machine)
+        gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, 9))
+        self.gps_sub_from_agent_list.append(gps_sub_from_agent)
       
       gps_pub_to_machine_topic = 'Robot' + str(i) + '/' + self.robot_gps_topic
       gps_pub_to_machine = self.create_publisher(NavSatFix, gps_pub_to_machine_topic, 1)
       self.gps_pub_to_machine_list.append(gps_pub_to_machine)
       
-      gps_sub_from_agent = roslibpy.Topic(client, self.robot_gps_from_agent_topic, 'sensor_msgs/NavSatFix')
-      gps_sub_from_agent.subscribe(lambda message: self.gps_sub_fa_callback(message, i))
-      self.gps_sub_from_agent_list.append(gps_sub_from_agent)
-    
+    self.npw_sub = self.create_subscription(Int8, "nri_plan_waypoint_ok", self.npw_callback, 3)
+  
     self.try_connection()
       
     timer_period = 1.0 # seconds
@@ -146,10 +166,29 @@ class NriPlanAgWebSocket(Node):
   def timer_callback(self):
     self.try_connection()
   
+  def npw_callback(self, msg):
+    if msg.data == 0:
+      for i in range(0, self.max_agent_num):
+        if self.client_list[i].is_connected is True:
+          automode_pub_to_agent = self.automode_pub_to_agent_list[i]
+          automode_pub_to_agent.publish(roslibpy.Message({'data': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                                                      }))
+          gps_goal_pub_to_agent = self.gps_goal_pub_to_agent_list[i]
+          gps_goal_pub_to_agent.publish(roslibpy.Message({'header': {
+                                                          'stamp': {
+                                                               'secs': int(0),
+                                                               'nsecs': int(0)
+                                                         },
+                                                         'frame_id': 'map'
+                                                         },
+                                                         'latitude': 0.0,
+                                                         'longitude': 0.0,
+                                                         'altitude': 0
+                                                         }))          
   def gps3p_goal_sub_fm_callback(self, msg, robot_index):
     automode_pub_to_agent = self.automode_pub_to_agent_list[robot_index]
     if self.client_list[robot_index].is_connected is True:
-      automode_pub_to_agent.publish(roslibpy.Message({'data': [1.0, msg.latitudes[0], msg.longitudes[0], msg.latitudes[1], msg.longitudes[1], msg.latitudes[2], msg.longitudes[2], 0.5]
+      automode_pub_to_agent.publish(roslibpy.Message({'data': [1.0, msg.latitudes[0], msg.longitudes[0], msg.latitudes[1], msg.longitudes[1], msg.latitudes[2], msg.longitudes[2], 1.5]
                                                       }))
 
   def gps_goal_sub_fm_callback(self, msg, robot_index):
