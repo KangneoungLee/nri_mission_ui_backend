@@ -60,8 +60,37 @@ class NriPlanAgWebSocket(Node):
       self.gps_goal_pub_to_agent_list.append(gps_goal_pub_to_agent)
       
       gps_goal_sub_from_machine_topic = 'Robot' + str(i) + '/' + self.robot_gps_goal_topic
-      gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, i), 3)
-      self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+
+      if i == 0:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 0), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 1:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 1), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 2:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 2), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 3:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 3), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 4:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 4), 3)      
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 5:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 5), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 6:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 6), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 7:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 7), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 8:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 8), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
+      elif i == 9:
+        gps_goal_sub_from_machine = self.create_subscription(NavSatFix, gps_goal_sub_from_machine_topic, lambda msg: self.gps_goal_sub_fm_callback(msg, 9), 3)
+        self.gps_goal_sub_from_machine_list.append(gps_goal_sub_from_machine)
       
       gps_pub_to_machine_topic = 'Robot' + str(i) + '/' + self.robot_gps_topic
       gps_pub_to_machine = self.create_publisher(NavSatFix, gps_pub_to_machine_topic, 1)
@@ -95,10 +124,9 @@ class NriPlanAgWebSocket(Node):
     gps_goal_pub_to_agent = self.gps_goal_pub_to_agent_list[robot_index]
     if self.client_list[robot_index].is_connected is True:
       gps_goal_pub_to_agent.publish(roslibpy.Message({'header': {
-                                                      'seq': 0,
                                                       'stamp': {
-                                                           'secs': 0.0,
-                                                           'nsecs': 0.0
+                                                           'secs': int(0),
+                                                           'nsecs': int(0)
                                                       },
                                                       'frame_id': 'map'
                                                       },
