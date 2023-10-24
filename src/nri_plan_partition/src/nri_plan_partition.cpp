@@ -257,7 +257,7 @@ void NriPlanPartition::ReadGpsPivot()
     x_axis_del_long_ = rb_long - lb_long;
    
     gps_pivot_ok_ = true;
-    std::cout << "____Read GPS Pivot Information competed____ " << std::endl;
+    std::cout << "____Read GPS Pivot Information completed____ " << std::endl;
 }
 
 void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
@@ -282,7 +282,7 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
           int x_pos_pixel, y_pos_pixel;
           this->GpsToMap(gps_info_array_[i].latitude, gps_info_array_[i].longitude, x_pos_pixel, y_pos_pixel);
           int temp_cov_radius = 20;
-          DynVoroHandle_->PushPoint(x_pos_pixel, y_pos_pixel, temp_cov_radius); 
+          DynVoroHandle_->PushPoint(x_pos_pixel, y_pos_pixel, i, temp_cov_radius); 
         }
         
         cur_agent_num_ = DynVoroHandle_->CurAgentNum();
@@ -295,7 +295,7 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
         
         DynVoroHandle_->PushDatum(datum_x_norm_*((float)map_width_), datum_y_norm_*((float)map_height_));
         
-        std::cout << "____Datum set competed____ " << " datum_x_ : "<< datum_x_norm_*((float)map_width_) << " datum_y_ : "<< datum_y_norm_*((float)map_height_) <<std::endl;
+        std::cout << "____Datum set completed____ " << " datum_x_ : "<< datum_x_norm_*((float)map_width_) << " datum_y_ : "<< datum_y_norm_*((float)map_height_) <<std::endl;
         
         float DropOutWeight = 1024.0;
         if (cur_agent_num_ <= 1) RealTime_InhbtDropout_ = true;
@@ -313,7 +313,7 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
         DynVoroHandle_->MoveAgents();
         
         rclcpp::Time init_time = this->get_clock()->now();
-        while( (this->get_clock()->now() - init_time) < rclcpp::Duration(10, 0))
+        while( (this->get_clock()->now() - init_time) < rclcpp::Duration(2, 0))
         {
            if((is_dropout_use_ == true)&&(RealTime_InhbtDropout_ == false))
            {
@@ -343,7 +343,7 @@ void NriPlanPartition::NpiOkCallback(const std_msgs::msg::Int8 & msg)
            RealTime_CcMetricDif_final_ = CcRate_*RealTime_CcMetricDif + (1-CcRate_)*RealTime_CcMetricDif_prev_;
            RealTime_CcMetricDif_prev_ = RealTime_CcMetricDif_final_;
            
-           if ((RealTime_InhbtDropout_ == false)&&(RealTime_CcMetricDif_final_ <= 0.002))
+           if ((RealTime_InhbtDropout_ == false)&&(RealTime_CcMetricDif_final_ <= 0.05))
            {
                 RealTime_InhbtDropout_ = true;
            }
@@ -374,7 +374,7 @@ void NriPlanPartition::WritePartition()
 	    float density = DynVoroHandle_->GetDensity(x,y);
             //std::cout << "x : "  << x << " y: " << y << " density : " << density<< std::endl;	  
 	    if((agent_index >= cur_agent_num_)||(density <= 0.0)) continue;
-			  
+	    
 	    unsigned char* temp_map =  agent_partition_maps_[agent_index];
 	    temp_map[cell_index] = 128;
 			
@@ -382,29 +382,30 @@ void NriPlanPartition::WritePartition()
 	}
     }
     
-    std::cout << "____Internal Partition copy competed____ " << std::endl;
+    std::cout << "____Internal Partition copy completed____ " << std::endl;
 	    
     for(int i = 0; i < cur_agent_num_; i++)
     {
         //std::stringstream s_stream(trunk_dir_);
 	//std::string substr;
 	//std::getline(s_stream, substr, '.');
-	std::string part_img_dir = trunk_dir_ + "/agent" + std::to_string(i) + ".png";
-	unsigned char* temp_map =  agent_partition_maps_[i];
+	int restored_index = DynVoroHandle_->GetActualIndex(i);
+	std::string part_img_dir = trunk_dir_ + "/agent" + std::to_string(restored_index) + ".png";
+	unsigned char* temp_map =  agent_partition_maps_[i]; // the index should be 'i' because the agent_partition_maps_ is referring the index in DynamicVoronoi
 	cv::Mat part_mat(map_height_, map_width_, CV_8UC1, temp_map);
 	bool check = cv::imwrite(part_img_dir, part_mat);
 	//rclcpp::Time init_time = this->get_clock()->now();
 	//while( (this->get_clock()->now() - init_time) < rclcpp::Duration(1, 0)) 
 	//{bool dummy = true;}
 	
-	//std::cout << " agent num :  " << i << " cv imwrite check : " << check << std::endl;  
+	//std::cout << " agent num :  " << restored_index << " cv imwrite check : " << check << std::endl;  
 	
 	std::ofstream StartingInfoTxt;
-	std::string info_dir =   trunk_dir_ + "/agent" + std::to_string(i) + ".txt";
+	std::string info_dir =   trunk_dir_ + "/agent" + std::to_string(restored_index) + ".txt";
 	StartingInfoTxt.open(info_dir);
 	
 	int start_x_pixel, start_y_pixel;
-	DynVoroHandle_->GetStartingPt(i, start_x_pixel, start_y_pixel);
+	DynVoroHandle_->GetStartingPt(i, start_x_pixel, start_y_pixel); // the index should be 'i' because the starting point is referring the index in DynamicVoronoi
 	
 	//std::cout << " start_x_pixel :  " << start_x_pixel << " start_y_pixel : " << start_y_pixel << std::endl;
 	
@@ -418,7 +419,7 @@ void NriPlanPartition::WritePartition()
 
 void NriPlanPartition::ReadDensity()
 {
-    cv::Mat img = cv::imread("/home/artlab/nri_plan_ws/src/trunk/density.png", cv::IMREAD_GRAYSCALE); //cv::imread(density_save_dir_, cv::IMREAD_GRAYSCALE);
+    cv::Mat img = cv::imread(density_save_dir_, cv::IMREAD_GRAYSCALE); //cv::imread(density_save_dir_, cv::IMREAD_GRAYSCALE);
     int width_org = img.cols;
     int height_org = img.rows;
     
@@ -460,7 +461,7 @@ void NriPlanPartition::ReadDensity()
     }
 
 
-    std::cout << "____Read Density Map competed____ " << std::endl;
+    std::cout << "____Read Density Map completed____ " << std::endl;
 }
 
 void NriPlanPartition::GenTempPartition()
@@ -480,7 +481,7 @@ void NriPlanPartition::GenTempPartition()
         agent_partition_maps_.push_back(part_map);
     }
     
-    std::cout << "____Generate Temp partition competed____ " << std::endl;
+    std::cout << "____Generate Temp partition completed____ " << std::endl;
 
 }
 

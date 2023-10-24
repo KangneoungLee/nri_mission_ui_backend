@@ -264,6 +264,12 @@ class NriPlanWayPoint(Node):
       
     
     else:
+      for i in range(0, self.max_agent_num):
+        msg = NavSatFix()
+        msg.latitude = 0.0
+        msg.longitude = 0.0
+        self.agent_gps_goal_pub[i].publish(msg)
+          
       msg = Int8()
       msg.data = 0
       self.npw_ok_topic_pub.publish(msg)
@@ -390,8 +396,8 @@ class NriPlanWayPoint(Node):
       thres = 254
       max_val = 255
       ret, bin_img = cv2.threshold(img, thres, max_val, cv2.THRESH_BINARY_INV)
-      #cv2.imshow(f"{robot_index} robot bin_img ", bin_img)
-      #cv2.waitKey(0)
+      debug_bin_img_dir = self.trunk_dir + '/bin_img_raw_' + str(robot_index) +'.png'
+      cv2.imwrite(debug_bin_img_dir, bin_img)
       contours = cv2.findContours(bin_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
       contours = contours[0] if len(contours) == 2 else contours[1]   # if len is 2, first element is value and second one is hierarchy
       contour_props = []
@@ -399,15 +405,28 @@ class NriPlanWayPoint(Node):
         x1, y1, w, h = cv2.boundingRect(contour)
         x2 = x1 + w
         y2 = y1 + h
-        add = x1, y1, x2, y2
+        if x1 > 0:
+          x1 = x1 -1
+        if x2 < self.map_width - 1:
+          x2 = x2 + 1
+        if y1 > 0:
+          y1 = y1 -1
+        if y2 < self.map_height - 1:
+          y2 = y2 + 1
+        add = x1 , y1, x2, y2
         contour_props.append(add)
-      
+        #self.get_logger().info(f"{robot_index}th agent contour info... x1 : {x1}, x2 : {x2}, y1 : {y1}, y2 : {y2}")
+      #bin_test_img = np.zeros((self.map_height, self.map_width), np.uint8)
       for data in contour_props:
-        cv2.rectangle(bin_img, (data[0], data[1]), (data[2], data[3]), cv2.FILLED)
-      #cv2.imshow(f"{robot_index} robot bin_img after drawing contour rect", bin_img)
-      #cv2.waitKey(0) 
-      kernel = np.ones((3, 3), np.uint8)  
-      bin_img = cv2.dilate(bin_img, kernel, iterations = 1)   
+        #self.get_logger().info(f"{robot_index}th agent contour info... data[0] : {data[0]}, data[2] : {data[2]}, data[1] : {data[1]}, data[3] : {data[3]}")
+        #bin_test_img = cv2.cvtColor(bin_test_img, cv2.COLOR_GRAY2BGR);
+        bin_img = cv2.rectangle(bin_img, (data[0], data[1]), (data[2], data[3]), (255, 255, 255), cv2.FILLED)
+      #debug_bin_img_rec_dir = self.trunk_dir + '/bin_img_rec_' + str(robot_index) +'.png'
+      #cv2.imwrite(debug_bin_img_rec_dir, bin_img)
+      #kernel = np.ones((3, 3), np.uint8)  
+      #bin_img = cv2.dilate(bin_img, kernel, iterations = 1)
+      #debug_bin_img_dilate_dir = self.trunk_dir + '/bin_img_dilate_' + str(robot_index) +'.png'
+      #cv2.imwrite(debug_bin_img_dilate_dir, bin_img)   
       self.agent_infos[robot_index].part_img = bin_img.copy() 
       
       x_init_correction = 0
@@ -434,7 +453,8 @@ class NriPlanWayPoint(Node):
 
       rp_ok = True
       self.agent_infos[robot_index].enable = True
-    except:
+    except Exception as error:
+      self.get_logger().info(f"image processing error : {error}")
       rp_ok = False
       self.agent_infos[robot_index].enable = False
       

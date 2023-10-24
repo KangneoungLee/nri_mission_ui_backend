@@ -275,7 +275,7 @@ void DynamicVoronoi::InitializeAgent()
     this->VoroPartNum_ = 0;
 }
 
-bool DynamicVoronoi::PushPoint(float x, float y, float cov_radius)
+bool DynamicVoronoi::PushPoint(float x, float y, int actual_agent_index, float cov_radius)
 {
 	/* add agent's parameter set (for example, agent position, velocity.. etc*/
 	if(x >= this->map_width_)
@@ -329,6 +329,8 @@ bool DynamicVoronoi::PushPoint(float x, float y, float cov_radius)
 	partition_info_single->part_cov_radius_ = cov_radius;
 	partition_info_single->agent_parllel_momentsum_x_ = 0;
 	partition_info_single->agent_parllel_momentsum_y_ = 0;
+	
+	index_remap_[this->VoroPartNum_] = actual_agent_index;
 
 
 	//std::vector<float>  xy_coor;
@@ -652,6 +654,11 @@ void DynamicVoronoi::UpdateDensityMap(unsigned char* vorocellDenseMapExtPtr)
 			else  this->vorocellObsMap_[index] = 0;
 		}
 	}
+}
+
+int DynamicVoronoi::GetActualIndex(int index_in_voro)
+{
+	return index_remap_[index_in_voro];
 }
 
 float DynamicVoronoi::GetDensity(int x, int y)
@@ -1734,9 +1741,9 @@ bool DynamicVoronoi::AgentDropOut()
 		{
 		     active = true; 
              this->agentDropoutCheck_[i] = true;
-			 std::cout<<" On dropout " <<"agent_num : "<< (i+1) <<" DropOutVar : "  << DropOutVar<< " DropOutTolerance" << DropOutTolerance <<std::endl;
+			 std::cout<<" On dropout " <<"agent_num : "<< i <<" DropOutVar : "  << DropOutVar<< " DropOutTolerance" << DropOutTolerance <<std::endl;
 	    }
-		else std::cout<<" No dropout " <<"agent_num : "<< (i+1) <<" DropOutVar : "  << DropOutVar<< " DropOutTolerance" << DropOutTolerance <<std::endl;
+		else std::cout<<" No dropout " <<"agent_num : "<< i <<" DropOutVar : "  << DropOutVar<< " DropOutTolerance" << DropOutTolerance <<std::endl;
 	}
 
 	return active;

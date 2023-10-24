@@ -61,6 +61,9 @@ class DynamicVoronoi{
 		
 		unsigned char* vorocellDenseMapExtPtr_ = NULL;
 		bool* agentDropoutCheck_;
+		int index_remap_[100];   
+		// inside DynamicVoronoi.cpp the agent index is accumlated by PushPoint(), 
+		//however, the actual index should be restored for outside of DynnamicVoronoi.cpp
 		
 		unsigned char* vorocellObsMap_ = NULL;
 		
@@ -122,7 +125,7 @@ class DynamicVoronoi{
 	   int MapPointToIndex(float x, float y);
 	   VoroCell* GetSingleCellByIndex(int x, int y);
 	   VoroCell* GetSingleCellByPoint(float x, float y);
-	   bool PushPoint(float x, float y, float cov_radius = 1);
+	   bool PushPoint(float x, float y, int agent_index, float cov_radius = 1);
 	   bool AgentPoseUpdate(float x, float y, int agent_num);
 	   bool AgentPoseGet(float& x, float& y, int agent_num);
 	   bool PushDatum(float x_datum, float y_datum);
@@ -141,6 +144,7 @@ class DynamicVoronoi{
 	   bool ExpandedVoronoi(bool is_propagation_animation = false, std::string img_dir ="/home/dummy", std::string label_dir = "/home/dummy.txt");
 	   void Propagatation(int agent_index, unsigned short agent_cen_x, unsigned short agent_cen_y, int col, int row, float radius, int StartingPt_x, int StartingPt_y, float init_pos_x, float init_pos_y, int area);
 	   void MoveAgents();
+	   int GetActualIndex(int index_in_voro);
 	   float CoverageMetric();
 	   void ResetDropout();
 	   void InitializeAgent();
